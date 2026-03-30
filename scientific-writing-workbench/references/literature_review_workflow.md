@@ -10,9 +10,10 @@ Use this reference when gathering evidence for a draft, a review article, or a r
    - exported reference libraries
    - PDFs already on disk
    - figures, tables, and analysis outputs
-2. Extract identifiers and candidate citations from local material.
-3. Build the evidence map before expanding the search.
-4. Use optional external lookup only to fill clear gaps, broaden coverage, or verify contested points.
+2. Resolve paper records and access state with `scripts/paper_access.py`.
+3. Extract identifiers and candidate citations from local material.
+4. Build the evidence map before expanding the search.
+5. Use optional external lookup only to fill clear gaps, broaden coverage, or verify contested points.
 
 ## Evidence map format
 
@@ -35,6 +36,7 @@ Support types:
 - Track search queries and why records were included.
 - Prefer primary studies for direct factual claims.
 - Use reviews to orient the field, not to replace primary evidence where direct support matters.
+- Track whether each included paper is metadata-only, abstract-only, or full-text accessible.
 
 ## Source ranking
 
@@ -53,6 +55,7 @@ When sources disagree:
 - state the disagreement directly
 - avoid summarizing the field as settled
 - note whether discrepancies may arise from design, sample, measurement, or analysis differences
+- state whether the disagreement was judged from abstracts or full text
 
 ## Output expectations
 
@@ -67,5 +70,6 @@ For literature review tasks, also produce:
 - a documented search strategy
 - inclusion and exclusion rationale
 - a synthesis plan by theme or question
+- access-state notes for key papers when the draft may depend on detailed methods or results
 
 For claim-specific tasks such as "find the strongest citation for this sentence" or "is this statement actually supported", switch to `references/claim_evidence_workflow.md` and use `scripts/claim_evidence_lookup.py` instead of treating the task as a broad review.

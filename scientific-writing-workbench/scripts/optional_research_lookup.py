@@ -5,15 +5,9 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
-from scholarly_lookup_common import (
-    arxiv_search,
-    crossref_search,
-    dedupe_records,
-    europepmc_search,
-    local_lookup,
-    openalex_search,
-)
+
+from paper_access import DEFAULT_PROVIDERS, collect_paper_records
+from scholarly_lookup_common import local_lookup
 
 
 def parse_args() -> argparse.Namespace:
@@ -23,44 +17,40 @@ def parse_args() -> argparse.Namespace:
         "--provider",
         choices=["local", "crossref", "openalex", "europepmc", "arxiv", "auto"],
         default="auto",
-        help="Lookup provider. 'auto' uses local first, then Crossref and Europe PMC.",
+        help="Lookup provider. 'auto' uses local first, then Europe PMC, OpenAlex, and Crossref.",
     )
-    parser.add_argument(
-        "--paths",
-        nargs="*",
-        default=[],
-        help="Local files or directories to inspect when using the local or auto provider.",
-    )
+    parser.add_argument("--paths", nargs="*", default=[], help="Local files or directories to inspect before external lookup.")
     parser.add_argument("--limit", type=int, default=5, help="Maximum number of results per provider.")
+    parser.add_argument("--enable-ocr", action="store_true", help="Enable OCR fallback for local PDFs after normal extraction fails.")
     return parser.parse_args()
+
+
+def provider_tuple(provider: str) -> tuple[str, ...]:
+    mapping = {
+        "local": tuple(),
+        "crossref": ("crossref",),
+        "openalex": ("openalex",),
+        "europepmc": ("europepmc",),
+        "arxiv": ("arxiv",),
+        "auto": DEFAULT_PROVIDERS,
+    }
+    return mapping[provider]
+
+
 def main() -> int:
     args = parse_args()
-    results: list[dict[str, object]] = []
-    provider_order = {
-        "local": ["local"],
-        "crossref": ["crossref"],
-        "openalex": ["openalex"],
-        "europepmc": ["europepmc"],
-        "arxiv": ["arxiv"],
-        "auto": ["local", "crossref", "europepmc"],
-    }[args.provider]
-
-    for provider in provider_order:
-        try:
-            if provider == "local":
-                results.extend(local_lookup(args.query, args.paths, args.limit))
-            elif provider == "crossref":
-                results.extend(crossref_search(args.query, args.limit))
-            elif provider == "openalex":
-                results.extend(openalex_search(args.query, args.limit))
-            elif provider == "europepmc":
-                results.extend(europepmc_search(args.query, args.limit))
-            elif provider == "arxiv":
-                results.extend(arxiv_search(args.query, args.limit))
-        except Exception as exc:
-            print(f"warning: provider {provider} failed: {exc}", file=sys.stderr)
-
-    print(json.dumps(dedupe_records(results)[: args.limit], indent=2, ensure_ascii=True))
+    if args.provider == "local":
+        records = local_lookup(args.query, args.paths, args.limit, enable_ocr=args.enable_ocr)
+        print(json.dumps(records[: args.limit], indent=2, ensure_ascii=True))
+        return 0
+    records = collect_paper_records(
+        paths=args.paths,
+        queries=[args.query],
+        limit_per_provider=args.limit,
+        enable_ocr=args.enable_ocr,
+        providers=provider_tuple(args.provider),
+    )
+    print(json.dumps(records[: args.limit], indent=2, ensure_ascii=True))
     return 0
 
 

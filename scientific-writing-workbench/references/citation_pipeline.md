@@ -11,6 +11,7 @@ If the task is not "build a bibliography" but instead "find the strongest citati
    - keep a record of where each identifier came from
 2. Metadata extraction
    - extract identifiers and candidate titles from local files first
+   - when the source is a paper or PDF, resolve it with `scripts/paper_access.py` so metadata, abstract, and full-text access are tracked separately
    - use `scripts/extract_metadata.py` for text or converted documents
 3. Enrichment
    - fill missing metadata from online sources only when an identifier or trustworthy source is available

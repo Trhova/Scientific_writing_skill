@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ipaddress
+import json
 import re
 import socket
 import sys
@@ -12,7 +13,7 @@ import urllib.error
 import urllib.parse
 from datetime import date
 
-from scholarly_lookup_common import arxiv_by_id, europepmc_by_pmid, http_text
+from scholarly_lookup_common import arxiv_by_id, europepmc_by_pmid, http_text, normalize_arxiv_id, normalize_doi, normalize_pmid
 
 DOI_RE = re.compile(r"^10\.\d{4,9}/[-._;()/:A-Z0-9]+$", re.IGNORECASE)
 PMID_RE = re.compile(r"^(?:PMID:?)?(\d{4,9})$", re.IGNORECASE)
@@ -175,12 +176,12 @@ def resolve_identifier(raw_identifier: str) -> dict[str, str]:
     identifier = raw_identifier.strip()
     pmid_match = PMID_RE.match(identifier)
     if DOI_RE.match(identifier):
-        return doi_to_bibtex(identifier)
+        return doi_to_bibtex(normalize_doi(identifier))
     if pmid_match:
-        return pmid_to_bibtex(pmid_match.group(1))
+        return pmid_to_bibtex(normalize_pmid(pmid_match.group(1)))
     arxiv_match = ARXIV_RE.match(identifier)
     if arxiv_match:
-        return arxiv_to_bibtex(arxiv_match.group(1))
+        return arxiv_to_bibtex(normalize_arxiv_id(arxiv_match.group(1)))
     if URL_RE.match(identifier):
         return url_to_bibtex(identifier)
     raise ValueError(f"unsupported identifier format: {raw_identifier}")

@@ -8,7 +8,7 @@ For a given claim:
 
 1. normalize the wording
 2. generate multiple search variants
-3. search local material first
+3. resolve local papers first with `scripts/paper_access.py`
 4. search external scholarly sources
 5. rank the evidence
 6. return a verdict on whether the claim is supported as written
@@ -56,7 +56,7 @@ Rank sources using a combination of:
 - evidence type
 - directness to the claim
 - recency
-- abstract availability and relevance
+- whether the paper was available only as metadata, as an abstract, or as full text
 - human relevance versus only animal or mechanistic evidence
 - whether the paper supports, narrows, or contradicts the claim
 
@@ -136,3 +136,4 @@ The result should identify:
 - the best review source if available
 - a verdict on the claim as written
 - notes explaining whether the wording should be weakened
+- whether the selected sources were metadata-only, abstract-only, or full-text accessible

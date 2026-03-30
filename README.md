@@ -10,6 +10,7 @@ The skill helps with:
 - adapting a manuscript to a journal
 - reviewing drafts and planning revisions
 - preparing response-to-reviewers documents
+- retrieving papers from local files, DOI, PMID, arXiv, titles, and literature search queries
 
 Main skill folder:
 
@@ -32,6 +33,37 @@ cp -R scientific-writing-workbench ~/.codex/skills/
 ```
 
 After copying it, restart Codex or reload the project if the skill does not appear immediately.
+
+## Recommended local environment
+
+This repo now includes a repo-local Conda environment for the paper and document tooling used by the skill.
+
+It is meant to provide:
+
+- `pdftotext` for fast PDF text extraction
+- `mutool` as a second PDF extractor
+- `tesseract` for optional OCR
+- Python libraries such as `pymupdf`, `pypdf`, `pdfplumber`, `pytesseract`, `beautifulsoup4`, and `lxml`
+
+Create or update the environment:
+
+```bash
+bash scripts/setup_writer_env.sh
+```
+
+Activate it:
+
+```bash
+conda activate /home/trhova/writer_skill/.writer-skill-env
+```
+
+Check that the important tools are available:
+
+```bash
+bash scripts/check_writer_env.sh
+```
+
+This environment stays inside the repo at `.writer-skill-env/` and is ignored by git.
 
 ## How to use it
 
@@ -117,6 +149,12 @@ If you want it to source or verify a specific sentence:
 Use $scientific-writing-workbench to check this claim: "Boulardii can cure cancer." Find the strongest supporting and limiting sources and tell me whether the claim is actually supported as written.
 ```
 
+If you want it to retrieve and inspect papers first:
+
+```text
+Use $scientific-writing-workbench to retrieve papers from papers/, DOI 10.1038/exampledoi, PMID 12345678, and the title "Aryl hydrocarbon receptor and intestinal immunity". Tell me which records have only metadata, which have abstracts, and which have full text before you draft anything.
+```
+
 ## Validation
 
 Quick local validation commands:
@@ -124,4 +162,11 @@ Quick local validation commands:
 ```bash
 python -m py_compile scientific-writing-workbench/scripts/*.py
 python /home/trhova/.codex/skills/.system/skill-creator/scripts/quick_validate.py scientific-writing-workbench
+```
+
+If you want to run the skill scripts with the repo-local environment, activate the env first and then run commands such as:
+
+```bash
+python scientific-writing-workbench/scripts/paper_access.py --doi 10.1038/s41598-024-54249-9
+python scientific-writing-workbench/scripts/claim_evidence_lookup.py "This sentence needs a source: [Creatine improves cognitive performance in sleep deprivation]"
 ```

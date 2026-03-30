@@ -19,6 +19,7 @@ Use this skill when the task involves planning, drafting, revising, reviewing, o
 
 1. Stage 1, evidence assembly:
    - Gather local notes, manuscript fragments, figures, tables, and bibliography files first.
+   - Resolve and ingest papers from local files, uploaded documents, DOI, PMID, arXiv, title, citation strings, or topic queries. See `references/paper_access_workflow.md`.
    - Ingest PDFs, DOCX, PPTX, XLSX, CSV, TXT, or Markdown when needed. See `references/document_ingestion.md`.
    - Build an evidence map that links each planned claim to one or more references, data sources, or an explicit inference label.
    - Produce a section-by-section outline before drafting prose.
@@ -33,6 +34,7 @@ Use this skill when the task involves planning, drafting, revising, reviewing, o
 - IMRaD and alternative manuscript shapes: `references/imrad_structure.md`
 - Reporting checklists and declarations: `references/reporting_guidelines.md`
 - Literature discovery and evidence mapping: `references/literature_review_workflow.md`
+- Paper retrieval, full-text access, and access-state rules: `references/paper_access_workflow.md`
 - Claim-specific sourcing and claim support checks: `references/claim_evidence_workflow.md`
 - Citation collection, enrichment, validation, and deduplication: `references/citation_pipeline.md`
 - Peer review and scored evaluation: `references/peer_review_rubric.md`
@@ -45,6 +47,8 @@ Use this skill when the task involves planning, drafting, revising, reviewing, o
 
 - `scripts/convert_documents.py`
   Use to turn PDF, DOCX, PPTX, XLSX, CSV, TXT, or Markdown files into clean text or Markdown for downstream reasoning.
+- `scripts/paper_access.py`
+  Use as the main entry point for resolving papers from local files, DOI, PMID, arXiv, title, citation strings, queries, or claims. It returns normalized paper records with explicit metadata, abstract, and full-text access states.
 - `scripts/extract_metadata.py`
   Use to pull DOI, PMID, arXiv, URL, title, and year candidates from notes, plain text, or converted documents.
 - `scripts/doi_to_bibtex.py`
@@ -54,9 +58,9 @@ Use this skill when the task involves planning, drafting, revising, reviewing, o
 - `scripts/deduplicate_bibtex.py`
   Use to collapse overlapping bibliography entries while preserving the richest trustworthy record.
 - `scripts/optional_research_lookup.py`
-  Use for provider-agnostic literature lookup. Start with local notes and existing bibliography, then add optional external providers only if needed.
+  Use for provider-agnostic literature lookup. Start with local notes and existing bibliography, then add optional external providers only if needed. It now returns normalized paper records rather than loose metadata hits.
 - `scripts/claim_evidence_lookup.py`
-  Use when the user wants the strongest citation for a specific claim, wants a sentence sourced, or asks whether a statement is actually supported by the literature.
+  Use when the user wants the strongest citation for a specific claim, wants a sentence sourced, or asks whether a statement is actually supported by the literature. It ranks paper records while respecting whether the evidence is metadata-only, abstract-only, or full-text.
 
 ## Operating pattern
 
@@ -64,11 +68,12 @@ When responding to a scientific writing request:
 
 1. Confirm the document type, target audience, and stage of the work.
 2. Inspect available files and existing references before searching externally.
-3. Build or update an evidence map.
-4. Draft an outline before long-form prose.
-5. Write paragraphs, not bullets, for the manuscript itself.
-6. Validate citations and required declarations before finalizing.
-7. If reviewing or revising, produce a comment-to-change mapping instead of vague advice.
+3. Use `scripts/paper_access.py` whenever paper retrieval or ingestion quality matters.
+4. Build or update an evidence map.
+5. Draft an outline before long-form prose.
+6. Write paragraphs, not bullets, for the manuscript itself.
+7. Validate citations and required declarations before finalizing.
+8. If reviewing or revising, produce a comment-to-change mapping instead of vague advice.
 
 For requests such as:
 
@@ -79,6 +84,15 @@ For requests such as:
 - "find the strongest paper supporting or contradicting this"
 
 start with `scripts/claim_evidence_lookup.py`, then use the returned verdict to decide whether to cite, soften, or reject the claim as written.
+
+For requests such as:
+
+- "find this DOI and read the paper"
+- "use these uploaded PDFs when drafting"
+- "search the literature for papers on this topic"
+- "tell me whether you actually had full text or only an abstract"
+
+start with `scripts/paper_access.py` so the workflow has an explicit access state before drafting or claim evaluation.
 
 ## Deliverable defaults
 

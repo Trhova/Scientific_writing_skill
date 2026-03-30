@@ -9,6 +9,7 @@
 - integrity-first: no fabricated citations, clear uncertainty labels, and explicit claim-to-evidence tracking
 - maintainable: compact `SKILL.md`, detailed references, and lightweight scripts
 - claim-aware: can search for the strongest citation for a specific sentence and judge whether the claim is supported as written
+- paper-aware: can resolve papers from local files, DOI, PMID, arXiv, title, citation strings, and topic queries while tracking metadata, abstract, and full-text access separately
 
 ## Basic use
 
@@ -78,12 +79,18 @@ Example claim-sourcing prompt:
 Use $scientific-writing-workbench to check this statement: "Creatine improves cognitive performance in sleep deprivation." Find the strongest supporting source, strongest limiting source, and give me a verdict on whether it is supported as written.
 ```
 
+Example paper-access prompt:
+
+```text
+Use $scientific-writing-workbench to retrieve the papers behind papers/, DOI 10.1038/exampledoi, and the title "Aryl hydrocarbon receptor and intestinal immunity". Deduplicate them by DOI, PMID, or title-year and tell me which ones are metadata-only, abstract-only, or full-text.
+```
+
 ## Folder map
 
 - `SKILL.md`: compact workflow router and guardrails
 - `agents/openai.yaml`: Codex UI metadata
 - `references/`: reusable guidance for drafting, literature review, citation QA, journal adaptation, review, and ingestion
-- `scripts/`: small command-line tools for document conversion and bibliography handling
+- `scripts/`: small command-line tools for paper access, document conversion, claim evidence lookup, and bibliography handling
 - `assets/`: manuscript, rebuttal, checklist, and optional LaTeX templates
 
 ## Installation
@@ -113,4 +120,4 @@ python /home/trhova/.codex/skills/.system/skill-creator/scripts/quick_validate.p
 
 ## Examples
 
-See `references/examples.md` for realistic prompts covering drafting, bibliography cleanup, and review plus revision response.
+See `references/examples.md` for realistic prompts covering drafting, bibliography cleanup, paper retrieval, and review plus revision response.

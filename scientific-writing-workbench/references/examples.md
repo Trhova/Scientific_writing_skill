@@ -60,7 +60,23 @@ Return the strongest supporting source, the strongest limiting or contradicting 
 If the wording is too strong, suggest a safer alternative.
 ```
 
-## Example 5: Rejecting an overstated claim
+## Example 5: Retrieving papers from mixed inputs
+
+Prompt:
+
+```text
+Use $scientific-writing-workbench to retrieve the papers behind these inputs before drafting:
+- papers/
+- DOI 10.1038/s41598-024-54249-9
+- PMID 12345678
+- the title "Aryl hydrocarbon receptor and intestinal immunity"
+
+Resolve duplicates by DOI, PMID, or title-year.
+Tell me which records have metadata only, which have abstracts, and which have full text.
+Prefer local full text if the same paper exists both locally and online.
+```
+
+## Example 6: Rejecting an overstated claim
 
 Prompt:
 

@@ -10,17 +10,8 @@ import re
 import sys
 from typing import Iterable
 
-from scholarly_lookup_common import (
-    crossref_by_doi,
-    crossref_search,
-    dedupe_records,
-    europepmc_by_pmid,
-    europepmc_search,
-    local_lookup,
-    normalize_title,
-    normalize_whitespace,
-    openalex_search,
-)
+from paper_access import DEFAULT_PROVIDERS, collect_paper_records
+from scholarly_lookup_common import normalize_title, normalize_whitespace
 
 STOPWORDS = {
     "a",
@@ -102,6 +93,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("claim", help="Natural-language scientific claim.")
     parser.add_argument("--paths", nargs="*", default=[], help="Local files or directories to search first.")
     parser.add_argument("--limit-per-provider", type=int, default=4, help="Maximum candidates fetched per provider per variant.")
+    parser.add_argument("--enable-ocr", action="store_true", help="Enable OCR fallback for local PDFs.")
     parser.add_argument("--json-indent", type=int, default=2, help="Indentation for JSON output.")
     return parser.parse_args()
 
@@ -135,9 +127,9 @@ def detect_claim_strength(tokens: Iterable[str]) -> str:
     token_set = set(tokens)
     if token_set & STRONG_CLAIM_TERMS:
         return "strong"
-    if "improves" in token_set or "improve" in token_set or "reduces" in token_set or "treats" in token_set:
+    if {"improves", "improve", "reduces", "reduce", "treats", "treat"} & token_set:
         return "moderate"
-    if "associated" in token_set or "may" in token_set or "linked" in token_set:
+    if {"associated", "may", "linked"} & token_set:
         return "cautious"
     return "moderate"
 
@@ -213,7 +205,7 @@ def soften_claim_text(claim: str) -> str:
 
 def generate_search_variants(claim: str) -> list[str]:
     normalized = strip_prompt_wrappers(claim)
-    subject, verb, obj = claim_parts(normalized)
+    subject, _verb, obj = claim_parts(normalized)
     keywords = keyword_tokens(normalized)
     variants = [normalized]
     if keywords:
@@ -240,27 +232,12 @@ def generate_search_variants(claim: str) -> list[str]:
     return unique[:6]
 
 
-def enrich_local_candidate(record: dict[str, object]) -> dict[str, object]:
-    pmid = str(record.get("pmid", "") or "")
-    doi = str(record.get("doi", "") or "")
-    enriched = None
-    if pmid:
-        enriched = europepmc_by_pmid(pmid)
-    elif doi:
-        enriched = crossref_by_doi(doi)
-    if enriched:
-        enriched["provider"] = f"local+{enriched['provider']}"
-        enriched["source"] = record.get("source", "")
-        enriched["abstract"] = enriched.get("abstract") or record.get("abstract", "")
-        return enriched
-    return record
-
-
 def classify_evidence_type(record: dict[str, object]) -> str:
     text = " ".join(
         [
             str(record.get("title", "")),
             str(record.get("abstract", "")),
+            str(record.get("full_text", ""))[:4000],
             str(record.get("publication_type_raw", "")),
             str(record.get("journal", "")),
         ]
@@ -296,7 +273,7 @@ def directness_score(claim: str, record: dict[str, object]) -> float:
     claim_terms = set(keyword_tokens(claim))
     if not claim_terms:
         return 0.0
-    text = " ".join([str(record.get("title", "")), str(record.get("abstract", ""))]).lower()
+    text = " ".join([str(record.get("title", "")), str(record.get("abstract", "")), str(record.get("full_text", ""))[:3000]]).lower()
     text_terms = set(keyword_tokens(text))
     overlap = claim_terms & text_terms
     score = len(overlap) / max(len(claim_terms), 1)
@@ -332,13 +309,16 @@ def recency_weight(year: int | None) -> float:
     return 0.2
 
 
-def citation_weight(record: dict[str, object]) -> float:
-    count = int(record.get("cited_by_count", 0) or 0)
-    return min(math.log10(count + 1), 1.5)
+def access_weight(record: dict[str, object]) -> float:
+    return {
+        "full_text": 2.0,
+        "abstract_only": 0.8,
+        "metadata_only": -1.0,
+    }.get(str(record.get("access_level", "")), 0.0)
 
 
 def relation_to_claim(claim: str, claim_strength: str, record: dict[str, object], evidence_type: str) -> str:
-    text = " ".join([str(record.get("title", "")), str(record.get("abstract", ""))]).lower()
+    text = " ".join([str(record.get("title", "")), str(record.get("abstract", "")), str(record.get("full_text", ""))[:3000]]).lower()
     claim_terms = set(keyword_tokens(claim))
     family = action_family(claim)
     directness = directness_score(claim, record)
@@ -373,8 +353,17 @@ def relation_to_claim(claim: str, claim_strength: str, record: dict[str, object]
 def human_evidence_flag(record: dict[str, object], evidence_type: str) -> bool:
     if evidence_type in {"systematic review / meta-analysis", "guideline / consensus", "randomized trial", "observational human study"}:
         return True
-    text = " ".join([str(record.get("title", "")), str(record.get("abstract", ""))]).lower()
+    text = " ".join([str(record.get("title", "")), str(record.get("abstract", "")), str(record.get("full_text", ""))[:2000]]).lower()
     return contains_any(text, HUMAN_HINTS) and not contains_any(text, ANIMAL_HINTS)
+
+
+def access_note(record: dict[str, object]) -> str:
+    level = str(record.get("access_level", "metadata_only"))
+    if level == "full_text":
+        return "full text available"
+    if level == "abstract_only":
+        return "abstract available, full text unavailable"
+    return "metadata only, paper not read in full"
 
 
 def rank_record(claim: str, claim_strength: str, record: dict[str, object]) -> dict[str, object]:
@@ -383,7 +372,7 @@ def rank_record(claim: str, claim_strength: str, record: dict[str, object]) -> d
     directness = directness_score(claim, record)
     human_flag = human_evidence_flag(record, evidence_type)
     score = evidence_weight(evidence_type) + (directness * 4.0) + recency_weight(record.get("year"))
-    score += citation_weight(record)
+    score += access_weight(record)
     if human_flag:
         score += 1.2
     if relation == "supporting":
@@ -395,7 +384,7 @@ def rank_record(claim: str, claim_strength: str, record: dict[str, object]) -> d
     why_selected = (
         f"{evidence_type}; directness {directness:.2f}; "
         f"{'human-relevant' if human_flag else 'not clearly human-clinical'}; "
-        f"classified as {relation}"
+        f"{access_note(record)}; classified as {relation}"
     )
     enriched = dict(record)
     enriched.update(
@@ -433,15 +422,17 @@ def verdict_for(claim_strength: str, supporting: dict[str, object] | None, limit
     if not supporting and not limiting:
         return "evidence_unclear", "low", ["No sufficiently relevant records were found."]
 
-    if limiting and (
-        not supporting or float(limiting["ranking_score"]) >= float(supporting["ranking_score"]) + 1.0
-    ):
+    if limiting and (not supporting or float(limiting["ranking_score"]) >= float(supporting["ranking_score"]) + 1.0):
         notes.append("The best matching evidence does not support the claim as written.")
         return "contradicted_or_not_supported", "medium", notes
 
     if supporting:
         evidence_type = str(supporting.get("evidence_type", ""))
         human_flag = bool(supporting.get("human_relevance"))
+        access_level = str(supporting.get("access_level", "metadata_only"))
+        if access_level == "metadata_only":
+            notes.append("The top match was identified from metadata only and was not read in abstract or full text.")
+            return "evidence_unclear", "low", notes
         if claim_strength == "strong" and not human_flag:
             notes.append("Closest support is not human clinical evidence.")
             return "unsupported_as_stated", "high", notes
@@ -459,6 +450,9 @@ def verdict_for(claim_strength: str, supporting: dict[str, object] | None, limit
             notes.append("There is some supporting evidence, but important caveats or narrower interpretations remain.")
             return "partially_supported", "medium", notes
         confidence = "high" if evidence_type in {"systematic review / meta-analysis", "guideline / consensus", "randomized trial"} else "medium"
+        if access_level == "abstract_only":
+            confidence = "medium" if confidence == "high" else "low"
+            notes.append("The strongest support is abstract-based rather than full-text confirmed.")
         return "supported", confidence, notes
 
     return "evidence_unclear", "low", ["Evidence was too weak or too indirect to classify confidently."]
@@ -476,6 +470,7 @@ def compact_source(record: dict[str, object] | None) -> dict[str, object] | None
         "pmid": record.get("pmid", ""),
         "url": record.get("url", ""),
         "evidence_type": record.get("evidence_type", ""),
+        "access_level": record.get("access_level", ""),
         "why_selected": record.get("why_selected", ""),
     }
 
@@ -489,30 +484,16 @@ def main() -> int:
 
     variants = generate_search_variants(claim)
     claim_strength = detect_claim_strength(keyword_tokens(claim))
-    records: list[dict[str, object]] = []
+    records = collect_paper_records(
+        paths=args.paths,
+        queries=variants,
+        limit_per_provider=args.limit_per_provider,
+        enable_ocr=args.enable_ocr,
+        providers=DEFAULT_PROVIDERS,
+        full_text_fetch_limit=3,
+    )
 
-    if args.paths:
-        for variant in variants[:3]:
-            records.extend(enrich_local_candidate(record) for record in local_lookup(variant, args.paths, args.limit_per_provider))
-
-    for variant in variants:
-        try:
-            records.extend(europepmc_search(variant, args.limit_per_provider))
-        except Exception as exc:
-            print(f"warning: Europe PMC failed for '{variant}': {exc}", file=sys.stderr)
-        try:
-            records.extend(openalex_search(variant, args.limit_per_provider))
-        except Exception as exc:
-            print(f"warning: OpenAlex failed for '{variant}': {exc}", file=sys.stderr)
-
-    if len(records) < 6:
-        for variant in variants[:3]:
-            try:
-                records.extend(crossref_search(variant, args.limit_per_provider))
-            except Exception as exc:
-                print(f"warning: Crossref failed for '{variant}': {exc}", file=sys.stderr)
-
-    ranked = [rank_record(claim, claim_strength, record) for record in dedupe_records(records)]
+    ranked = [rank_record(claim, claim_strength, record) for record in records]
     ranked.sort(key=lambda item: item["ranking_score"], reverse=True)
 
     best_supporting = pick_best(ranked, "supporting")
@@ -524,6 +505,10 @@ def main() -> int:
         notes.append("Closest support is preclinical or mechanistic rather than human clinical evidence.")
     if best_supporting and not best_supporting.get("human_relevance"):
         notes.append("No clear human clinical evidence was identified among the top supporting records.")
+    if best_supporting:
+        notes.append(f"Top supporting record access level: {best_supporting.get('access_level', 'metadata_only')}.")
+    if best_limiting:
+        notes.append(f"Top limiting record access level: {best_limiting.get('access_level', 'metadata_only')}.")
     if verdict in {"unsupported_as_stated", "contradicted_or_not_supported"} and claim_strength == "strong":
         notes.append("Prefer a weaker wording such as 'may be associated with' or 'has limited evidence in humans'.")
 
