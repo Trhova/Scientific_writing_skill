@@ -1,0 +1,7 @@
+interface:
+  display_name: "Scientific Writing Workbench"
+  short_description: "Evidence-grounded scientific drafting and review"
+  default_prompt: "Use $scientific-writing-workbench to turn my notes, citations, and manuscript files into an evidence-grounded draft with citation checks and journal-fit guidance."
+
+policy:
+  allow_implicit_invocation: true
