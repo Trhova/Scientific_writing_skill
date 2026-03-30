@@ -6,6 +6,7 @@ The skill helps with:
 
 - drafting scientific sections from notes, tables, and figures
 - organizing and checking references
+- checking whether a sentence is actually supported by the literature
 - adapting a manuscript to a journal
 - reviewing drafts and planning revisions
 - preparing response-to-reviewers documents
@@ -88,6 +89,7 @@ Use $scientific-writing-workbench to draft the Results section from notes/result
 - Draft an abstract, introduction, methods, results, discussion, conclusion, or cover letter
 - Turn bullet notes into full scientific prose
 - Build or clean a bibliography from DOIs, PMIDs, URLs, and BibTeX
+- Find the strongest paper supporting or limiting a specific claim
 - Check for duplicate or suspicious references
 - Adapt a paper to a target journal
 - Review a draft and score it with a rubric
@@ -107,6 +109,12 @@ If you already have a BibTeX file, mention that too:
 
 ```text
 Use $scientific-writing-workbench with papers/, notes/project_notes.md, and refs/references.bib. Clean the bibliography and use the validated references while drafting the discussion.
+```
+
+If you want it to source or verify a specific sentence:
+
+```text
+Use $scientific-writing-workbench to check this claim: "Boulardii can cure cancer." Find the strongest supporting and limiting sources and tell me whether the claim is actually supported as written.
 ```
 
 ## Validation

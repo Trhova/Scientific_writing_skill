@@ -8,6 +8,7 @@
 - provider-agnostic: optional research lookup is abstracted by provider, not tied to one commercial service
 - integrity-first: no fabricated citations, clear uncertainty labels, and explicit claim-to-evidence tracking
 - maintainable: compact `SKILL.md`, detailed references, and lightweight scripts
+- claim-aware: can search for the strongest citation for a specific sentence and judge whether the claim is supported as written
 
 ## Basic use
 
@@ -69,6 +70,12 @@ Example review prompt:
 
 ```text
 Use $scientific-writing-workbench to review drafts/manuscript_v2.md with reviewer_comments.md and refs/references.bib. Score it with the rubric and prepare a response-to-reviewers table.
+```
+
+Example claim-sourcing prompt:
+
+```text
+Use $scientific-writing-workbench to check this statement: "Creatine improves cognitive performance in sleep deprivation." Find the strongest supporting source, strongest limiting source, and give me a verdict on whether it is supported as written.
 ```
 
 ## Folder map

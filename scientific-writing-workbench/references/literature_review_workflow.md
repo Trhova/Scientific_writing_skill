@@ -67,3 +67,5 @@ For literature review tasks, also produce:
 - a documented search strategy
 - inclusion and exclusion rationale
 - a synthesis plan by theme or question
+
+For claim-specific tasks such as "find the strongest citation for this sentence" or "is this statement actually supported", switch to `references/claim_evidence_workflow.md` and use `scripts/claim_evidence_lookup.py` instead of treating the task as a broad review.

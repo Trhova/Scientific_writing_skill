@@ -50,3 +50,5 @@ This map can be a table, JSON block, or structured notes file. It is a working a
 - Claims about prior literature should match the cited source category. Do not cite a review as if it were the primary experiment unless that is made explicit.
 - Remove placeholder phrasing such as "study X probably shows" or "cite here".
 - If the evidence is incomplete, say so instead of smoothing over the gap.
+
+If the user asks for the best source for a claim, or asks whether a sentence is really supported, do not guess. Run the claim through the claim-evidence workflow first and revise the wording if the evidence only supports a weaker statement.

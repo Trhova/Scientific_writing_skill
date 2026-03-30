@@ -4,14 +4,15 @@
 from __future__ import annotations
 
 import argparse
-import json
+import ipaddress
 import re
+import socket
 import sys
 import urllib.error
 import urllib.parse
-import urllib.request
-import xml.etree.ElementTree as ET
 from datetime import date
+
+from scholarly_lookup_common import arxiv_by_id, europepmc_by_pmid, http_text
 
 DOI_RE = re.compile(r"^10\.\d{4,9}/[-._;()/:A-Z0-9]+$", re.IGNORECASE)
 PMID_RE = re.compile(r"^(?:PMID:?)?(\d{4,9})$", re.IGNORECASE)
@@ -31,10 +32,36 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def http_get(url: str, headers: dict[str, str] | None = None) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, **(headers or {})})
-    with urllib.request.urlopen(request, timeout=20) as response:
-        return response.read()
+def validate_public_url(identifier: str) -> str:
+    parsed = urllib.parse.urlparse(identifier)
+    if parsed.scheme not in {"http", "https"}:
+        raise ValueError("only http and https URLs are supported")
+    if not parsed.hostname:
+        raise ValueError("URL must include a hostname")
+    hostname = parsed.hostname.lower()
+    if hostname in {"localhost", "127.0.0.1", "::1"}:
+        raise ValueError("refusing localhost URL input")
+    try:
+        addresses = {result[4][0] for result in socket.getaddrinfo(hostname, None)}
+    except socket.gaierror as exc:
+        raise ValueError(f"could not resolve hostname: {exc}") from exc
+    for address in addresses:
+        try:
+            ip = ipaddress.ip_address(address)
+        except ValueError:
+            continue
+        if any(
+            (
+                ip.is_private,
+                ip.is_loopback,
+                ip.is_link_local,
+                ip.is_multicast,
+                ip.is_reserved,
+                ip.is_unspecified,
+            )
+        ):
+            raise ValueError("refusing URL that resolves to a non-public address")
+    return identifier
 
 
 def slugify(value: str) -> str:
@@ -80,65 +107,54 @@ def bibtex_entry(entry_type: str, key: str, fields: dict[str, str]) -> str:
 
 def doi_to_bibtex(identifier: str) -> dict[str, str]:
     headers = {"Accept": "application/x-bibtex"}
-    payload = http_get(f"https://doi.org/{urllib.parse.quote(identifier, safe='/')}", headers=headers)
-    bib = payload.decode("utf-8").strip()
+    bib = http_text(f"https://doi.org/{urllib.parse.quote(identifier, safe='/')}", accept=headers["Accept"]).strip()
     if not bib.startswith("@"):
         raise ValueError("DOI service did not return BibTeX")
     return {"type": "bibtex", "value": bib}
 
 
 def pmid_to_bibtex(identifier: str) -> dict[str, str]:
-    query = urllib.parse.quote(f"EXT_ID:{identifier} AND SRC:MED")
-    url = f"https://www.ebi.ac.uk/europepmc/webservices/rest/search?query={query}&format=json&pageSize=1"
-    data = json.loads(http_get(url).decode("utf-8"))
-    results = data.get("resultList", {}).get("result", [])
-    if not results:
+    record = europepmc_by_pmid(identifier)
+    if not record:
         raise ValueError(f"PMID {identifier} not found")
-    record = results[0]
-    authors = [name.strip() for name in (record.get("authorString") or "").split(",") if name.strip()]
-    year = (record.get("pubYear") or "").strip() or None
+    authors = [name.strip() for name in (record.get("authors") or "").split(",") if name.strip()]
+    year = str(record.get("year") or "") or None
     title = (record.get("title") or "").strip() or None
     fields = {
         "author": " and ".join(authors),
         "title": title or "",
-        "journal": record.get("journalTitle", "").strip(),
+        "journal": str(record.get("journal", "")).strip(),
         "year": year or "",
-        "volume": record.get("journalVolume", "").strip(),
-        "number": record.get("issue", "").strip(),
-        "pages": record.get("pageInfo", "").strip(),
-        "doi": record.get("doi", "").strip(),
+        "doi": str(record.get("doi", "")).strip(),
         "pmid": identifier,
-        "url": f"https://pubmed.ncbi.nlm.nih.gov/{identifier}/",
+        "url": str(record.get("url", "")).strip() or f"https://pubmed.ncbi.nlm.nih.gov/{identifier}/",
     }
     key = make_key(authors, year, title, f"pmid{identifier}")
     return {"type": "bibtex", "value": bibtex_entry("article", key, fields)}
 
 
 def arxiv_to_bibtex(identifier: str) -> dict[str, str]:
-    url = f"http://export.arxiv.org/api/query?id_list={urllib.parse.quote(identifier)}"
-    root = ET.fromstring(http_get(url))
-    namespace = {"atom": "http://www.w3.org/2005/Atom"}
-    entry = root.find("atom:entry", namespace)
-    if entry is None:
+    record = arxiv_by_id(identifier)
+    if not record:
         raise ValueError(f"arXiv record {identifier} not found")
-    authors = [node.text.strip() for node in entry.findall("atom:author/atom:name", namespace) if node.text]
-    title = (entry.findtext("atom:title", default="", namespaces=namespace) or "").strip().replace("\n", " ")
-    published = entry.findtext("atom:published", default="", namespaces=namespace)
-    year = published[:4] if published else ""
+    authors = [name.strip() for name in str(record.get("authors", "")).split(",") if name.strip()]
+    title = str(record.get("title", "")).strip() or None
+    year = str(record.get("year") or "")
     fields = {
         "author": " and ".join(authors),
-        "title": title,
+        "title": title or "",
         "year": year,
         "archivePrefix": "arXiv",
         "eprint": identifier,
-        "url": entry.findtext("atom:id", default="", namespaces=namespace),
+        "url": str(record.get("url", "")).strip(),
     }
     key = make_key(authors, year or None, title or None, f"arxiv{identifier}")
     return {"type": "bibtex", "value": bibtex_entry("misc", key, fields)}
 
 
 def url_to_bibtex(identifier: str) -> dict[str, str]:
-    html = http_get(identifier).decode("utf-8", errors="replace")
+    safe_identifier = validate_public_url(identifier)
+    html = http_text(safe_identifier)
     title_match = re.search(r"<title[^>]*>(.*?)</title>", html, re.IGNORECASE | re.DOTALL)
     title = ""
     if title_match:
@@ -149,7 +165,7 @@ def url_to_bibtex(identifier: str) -> dict[str, str]:
     key = make_key([], None, title, "web")
     fields = {
         "title": title,
-        "url": identifier,
+        "url": safe_identifier,
         "note": f"Accessed {accessed}",
     }
     return {"type": "bibtex", "value": bibtex_entry("misc", key, fields)}
@@ -177,7 +193,7 @@ def main() -> int:
     for identifier in args.identifiers:
         try:
             resolved.append({"identifier": identifier, **resolve_identifier(identifier)})
-        except (ValueError, urllib.error.URLError, ET.ParseError) as exc:
+        except (ValueError, urllib.error.URLError) as exc:
             failures += 1
             print(f"warning: {identifier}: {exc}", file=sys.stderr)
 

@@ -2,6 +2,8 @@
 
 Use this reference for bibliography building, cleaning, and validation.
 
+If the task is not "build a bibliography" but instead "find the strongest citation for this specific sentence", use `references/claim_evidence_workflow.md` and `scripts/claim_evidence_lookup.py` first, then add the chosen citation to the bibliography workflow if needed.
+
 ## Pipeline stages
 
 1. Discovery and intake

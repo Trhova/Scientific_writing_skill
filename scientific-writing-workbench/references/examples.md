@@ -48,3 +48,24 @@ Run both a qualitative review and the 8-dimension rubric.
 Then build a reviewer-response table that maps each comment to a response, the manuscript change made, and the changed location.
 Flag any comments that require new analysis rather than wording changes.
 ```
+
+## Example 4: Best citation for a specific claim
+
+Prompt:
+
+```text
+Use $scientific-writing-workbench to check this claim: "Creatine improves cognitive performance in sleep deprivation."
+Generate search variants, search local files first if relevant, then search the literature.
+Return the strongest supporting source, the strongest limiting or contradicting source, the best review source, and a verdict on whether the claim is supported as written.
+If the wording is too strong, suggest a safer alternative.
+```
+
+## Example 5: Rejecting an overstated claim
+
+Prompt:
+
+```text
+Use $scientific-writing-workbench to evaluate this sentence: "Boulardii can cure cancer."
+Find the strongest evidence for and against it and tell me whether the statement is supported as written.
+If not, explain what the literature actually supports and suggest a more defensible phrasing.
+```

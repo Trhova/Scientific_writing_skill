@@ -33,6 +33,7 @@ Use this skill when the task involves planning, drafting, revising, reviewing, o
 - IMRaD and alternative manuscript shapes: `references/imrad_structure.md`
 - Reporting checklists and declarations: `references/reporting_guidelines.md`
 - Literature discovery and evidence mapping: `references/literature_review_workflow.md`
+- Claim-specific sourcing and claim support checks: `references/claim_evidence_workflow.md`
 - Citation collection, enrichment, validation, and deduplication: `references/citation_pipeline.md`
 - Peer review and scored evaluation: `references/peer_review_rubric.md`
 - Journal or conference adaptation: `references/journal_adaptation.md`
@@ -54,6 +55,8 @@ Use this skill when the task involves planning, drafting, revising, reviewing, o
   Use to collapse overlapping bibliography entries while preserving the richest trustworthy record.
 - `scripts/optional_research_lookup.py`
   Use for provider-agnostic literature lookup. Start with local notes and existing bibliography, then add optional external providers only if needed.
+- `scripts/claim_evidence_lookup.py`
+  Use when the user wants the strongest citation for a specific claim, wants a sentence sourced, or asks whether a statement is actually supported by the literature.
 
 ## Operating pattern
 
@@ -66,6 +69,16 @@ When responding to a scientific writing request:
 5. Write paragraphs, not bullets, for the manuscript itself.
 6. Validate citations and required declarations before finalizing.
 7. If reviewing or revising, produce a comment-to-change mapping instead of vague advice.
+
+For requests such as:
+
+- "find a source for this claim"
+- "what is the best citation for this sentence?"
+- "check whether this statement is actually supported"
+- "source this paragraph"
+- "find the strongest paper supporting or contradicting this"
+
+start with `scripts/claim_evidence_lookup.py`, then use the returned verdict to decide whether to cite, soften, or reject the claim as written.
 
 ## Deliverable defaults
 
