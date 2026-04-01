@@ -24,6 +24,7 @@ Use this skill when the task involves planning, drafting, revising, reviewing, o
    - Build an evidence map that links each planned claim to one or more references, data sources, or an explicit inference label.
    - Produce a section-by-section outline before drafting prose.
 2. Stage 2, prose drafting:
+   - Load both `references/writing_principles.md` and `references/style_preferences.md` before drafting.
    - Convert the evidence-backed outline into connected paragraphs with clear transitions.
    - Preserve uncertainty labels where the evidence is partial or indirect.
    - Run a claim-citation alignment pass before presenting the manuscript as ready.
@@ -31,6 +32,7 @@ Use this skill when the task involves planning, drafting, revising, reviewing, o
 ## Task routing
 
 - Core drafting and scientific style: `references/writing_principles.md`
+- User-specific drafting and phrasing defaults: `references/style_preferences.md`
 - IMRaD and alternative manuscript shapes: `references/imrad_structure.md`
 - Reporting checklists and declarations: `references/reporting_guidelines.md`
 - Literature discovery and evidence mapping: `references/literature_review_workflow.md`
@@ -71,9 +73,16 @@ When responding to a scientific writing request:
 3. Use `scripts/paper_access.py` whenever paper retrieval or ingestion quality matters.
 4. Build or update an evidence map.
 5. Draft an outline before long-form prose.
-6. Write paragraphs, not bullets, for the manuscript itself.
+6. Load any user-specific style defaults from `references/style_preferences.md`, then write paragraphs, not bullets, for the manuscript itself.
 7. Validate citations and required declarations before finalizing.
 8. If reviewing or revising, produce a comment-to-change mapping instead of vague advice.
+
+When `references/style_preferences.md` is present:
+
+- treat it as the default style layer for phrasing, transitions, figure references, and rhetorical habits
+- do not let it override scientific accuracy, evidence standards, or access-state rules
+- let direct user instructions in chat override the style file for that turn
+- let venue or journal requirements override the style file when they conflict
 
 For requests such as:
 

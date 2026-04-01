@@ -93,6 +93,29 @@ Use $scientific-writing-workbench to retrieve the papers behind papers/, DOI 10.
 - `scripts/`: small command-line tools for paper access, document conversion, claim evidence lookup, and bibliography handling
 - `assets/`: manuscript, rebuttal, checklist, and optional LaTeX templates
 
+## Personal style defaults
+
+You can keep your global writing-style preferences inside:
+
+```text
+references/style_preferences.md
+```
+
+Edit that file to store habits such as:
+
+- how to refer to figures
+- whether you prefer `Fig. 1D` rather than `Figure 1D shows...`
+- how restrained or interpretive the prose should sound
+- how explicit transitions should be
+
+The skill treats this file as a default style layer during drafting and revision.
+
+Important precedence:
+
+- direct instructions you give in chat win for that turn
+- journal or venue requirements win if they conflict with your defaults
+- style preferences do not override evidence standards or citation integrity rules
+
 ## Installation
 
 Project-local installation:

@@ -2,6 +2,8 @@
 
 These examples demonstrate the expected workflow: evidence first, outline second, prose third.
 
+If you want the skill to follow persistent global phrasing habits, edit `references/style_preferences.md`. The examples below assume that file is loaded during drafting and revision.
+
 ## Example 1: Drafting a results section from notes and data
 
 Prompt:
@@ -84,4 +86,16 @@ Prompt:
 Use $scientific-writing-workbench to evaluate this sentence: "Boulardii can cure cancer."
 Find the strongest evidence for and against it and tell me whether the statement is supported as written.
 If not, explain what the literature actually supports and suggest a more defensible phrasing.
+```
+
+## Example 7: Drafting with personal style defaults
+
+Prompt:
+
+```text
+Use $scientific-writing-workbench to draft the Introduction from notes/intro_outline.md, papers/, and refs/references.bib.
+Follow the global style defaults in references/style_preferences.md.
+Make the scientific point first, then attach figure references in parentheses, for example `(Fig. 1D)`.
+Do not use openers like "Figure 1D shows..." unless I explicitly ask for that style.
+Keep the tone restrained and mechanistic.
 ```
