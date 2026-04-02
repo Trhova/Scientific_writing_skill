@@ -23,11 +23,30 @@ Use this skill when the task involves planning, drafting, revising, reviewing, o
    - Ingest PDFs, DOCX, PPTX, XLSX, CSV, TXT, or Markdown when needed. See `references/document_ingestion.md`.
    - Build an evidence map that links each planned claim to one or more references, data sources, or an explicit inference label.
    - Produce a section-by-section outline before drafting prose.
-2. Stage 2, prose drafting:
+2. Stage 2, scientific drafting:
    - Load both `references/writing_principles.md` and `references/style_preferences.md` before drafting.
    - Convert the evidence-backed outline into connected paragraphs with clear transitions.
    - Preserve uncertainty labels where the evidence is partial or indirect.
-   - Run a claim-citation alignment pass before presenting the manuscript as ready.
+   - Run a claim-citation alignment pass before moving to prose refinement.
+3. Stage 3, mandatory prose editing:
+   - After each drafted section or subsection, run a second-pass language edit before showing any text to the user.
+   - Rewrite only for style, flow, tone, and sentence rhythm.
+   - Preserve scientific meaning, citations, DOI placement, paragraph structure, and level of detail.
+   - Remove awkward LLM-style phrasing, choppy transitions, dramatic standalone transition sentences, and meta-commentary that only announces a point.
+   - Return only the post-edited version of that section or subsection.
+
+## Section drafting loop
+
+When writing any manuscript section or subsection, use this loop and do not skip steps:
+
+1. Gather section-specific evidence.
+2. Map each planned claim to a citation, figure, data source, or explicit inference label.
+3. Draft the section for scientific correctness, mechanistic clarity, and completeness.
+4. Run the mandatory prose-editing pass on that drafted section.
+5. Return only the edited section to the user.
+6. Repeat for the next section or subsection.
+
+The prose-editing pass is required after each section or subsection draft. Do not wait until the full document is finished.
 
 ## Task routing
 
@@ -74,8 +93,9 @@ When responding to a scientific writing request:
 4. Build or update an evidence map.
 5. Draft an outline before long-form prose.
 6. Load any user-specific style defaults from `references/style_preferences.md`, then write paragraphs, not bullets, for the manuscript itself.
-7. Validate citations and required declarations before finalizing.
-8. If reviewing or revising, produce a comment-to-change mapping instead of vague advice.
+7. Immediately after drafting each section or subsection, run the mandatory prose-editing pass and return only the edited version.
+8. Validate citations and required declarations before finalizing.
+9. If reviewing or revising, produce a comment-to-change mapping instead of vague advice.
 
 When `references/style_preferences.md` is present:
 
@@ -83,6 +103,24 @@ When `references/style_preferences.md` is present:
 - do not let it override scientific accuracy, evidence standards, or access-state rules
 - let direct user instructions in chat override the style file for that turn
 - let venue or journal requirements override the style file when they conflict
+
+During the mandatory prose-editing pass:
+
+- improve sentence flow and transition quality without changing scientific meaning
+- merge short, disconnected sentences when a smoother structure preserves the same detail
+- remove dramatic or fragment-like transition sentences
+- remove meta-writing phrases such as `The important point is...`, `Together, these studies...`, or `At first glance...` when they do not add biological content
+- keep a formal PhD-thesis tone
+- preserve citations, DOI placement, claim strength, factual nuance, and paragraph logic
+- do not add or remove literature
+- do not compress the writing aggressively
+- do not replace precise biological content with smoother but vaguer wording
+
+Bad language patterns that the prose-editing pass should catch and rewrite:
+
+- short standalone transition sentences such as `Time adds another layer to that variation.`
+- meta-writing phrases such as `This matters because...`, `Another factor is...`, `The important point is...`, `Together, these studies...`, or `At first glance...`
+- empty academic filler such as `plays a key role`, `is increasingly recognized`, `well characterized`, `provides a useful framework`, or `tractable set of molecules`
 
 For requests such as:
 

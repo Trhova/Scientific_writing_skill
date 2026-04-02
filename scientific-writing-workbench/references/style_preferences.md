@@ -33,6 +33,7 @@ Avoid by default:
 - Prefer mechanistic clarity over hype or inflated novelty language.
 - Avoid overstating causality, certainty, or generality.
 - Prefer precise verbs such as `associated with`, `linked to`, `supports`, `suggests`, `is consistent with`, or `has been reported to` when the evidence is not definitive.
+- Do not describe a topic as important, emerging, useful, or well characterized when the sentence could instead describe the underlying biology.
 
 Preferred:
 
@@ -44,6 +45,32 @@ Avoid by default:
 - `This clearly proves...`
 - `This dramatically changes...`
 - `The microbiome definitively determines...`
+
+## Concrete Biological Writing
+
+- Each sentence should introduce concrete biological information whenever possible.
+- Prefer process, mechanism, quantity, compartment, cell type, or molecule over topic-level commentary.
+- Avoid meta-commentary about why a concept is being introduced.
+- Avoid repetitive filler phrases such as:
+  - `is an important area`
+  - `is increasingly recognized`
+  - `provides a useful entry point`
+  - `is well characterized`
+  - `plays a key role`
+- Do not hedge by default with `may`, `potentially`, or `is thought to` unless the uncertainty itself is biologically relevant.
+- Vary sentence structure enough to avoid a repetitive thesis rhythm.
+
+Preferred:
+
+- `Tryptophan is metabolized by both host enzymes and gut bacteria, generating metabolites that can enter circulation and interact with host signaling pathways.`
+- `Indole derivatives are detectable in feces and in blood, indicating that microbial metabolism in the gut can influence systemic metabolite pools.`
+- `Different taxa carry different enzymatic capacities, which changes the set of metabolites produced from the same substrate.`
+
+Avoid by default:
+
+- `Tryptophan metabolism is an important and well-characterized pathway that plays a key role in host-microbe interactions.`
+- `This is an increasingly recognized field with broad implications.`
+- `This provides a useful entry point for discussing host-microbe crosstalk.`
 
 ## Transitions
 
@@ -69,6 +96,12 @@ Avoid by default:
 - Favor prose that narrows from field-level context to the specific mechanistic question.
 - Keep the narrative disciplined: do not over-explain obvious transitions, but do make the argumentative structure visible.
 - When multiple interpretations exist, acknowledge them rather than forcing a single clean story.
+- Let structure imply importance rather than using adjectives to announce it.
+- Prefer paragraphs that follow this sequence:
+  - direct biological statement
+  - mechanistic or quantitative detail
+  - broader system implication
+  - bridge to the next concept
 
 Preferred:
 

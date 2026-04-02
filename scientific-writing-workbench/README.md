@@ -51,14 +51,27 @@ Typical contents:
 3. For drafting, ask for:
    - an evidence map
    - an outline
-   - then polished prose
+   - then a section-by-section draft with a mandatory prose edit pass after each section
 4. For references, ask it to validate citations before finalizing.
 5. For revisions, ask for a reviewer comment to manuscript change table.
+
+When the skill drafts a section, it now uses two internal layers:
+
+1. Scientific drafting:
+   - gathers literature
+   - organizes claims
+   - writes the section for correctness, completeness, and evidence grounding
+2. Prose editing:
+   - rewrites that section only for flow, tone, and sentence rhythm
+   - preserves meaning, citations, paragraph structure, and level of detail
+
+The text shown back to you should already be the post-edited version of that section, not the raw first draft.
 
 Example drafting prompt:
 
 ```text
 Use $scientific-writing-workbench with papers/, notes/study_notes.md, data/results.csv, figure1.png, and refs/references.bib. First build an evidence map and outline for the Introduction and Results. Then write full paragraphs and flag any unsupported claims.
+After drafting each section, run the mandatory prose-editing pass before showing it to me.
 ```
 
 Example bibliography prompt:

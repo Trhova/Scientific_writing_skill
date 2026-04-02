@@ -1,6 +1,6 @@
 # Examples
 
-These examples demonstrate the expected workflow: evidence first, outline second, prose third.
+These examples demonstrate the expected workflow: evidence first, outline second, scientific draft third, prose-edit pass fourth.
 
 If you want the skill to follow persistent global phrasing habits, edit `references/style_preferences.md`. The examples below assume that file is loaded during drafting and revision.
 
@@ -18,6 +18,7 @@ Inputs:
 
 First build an evidence map and a section outline.
 Then write full-paragraph prose for the Results section.
+After each section or subsection draft, run the mandatory prose-editing pass before showing it to me.
 Every major claim must be linked to a citation, data file, figure, table, or marked as inference.
 Include a self-contained legend for Figure 2.
 ```
@@ -98,4 +99,5 @@ Follow the global style defaults in references/style_preferences.md.
 Make the scientific point first, then attach figure references in parentheses, for example `(Fig. 1D)`.
 Do not use openers like "Figure 1D shows..." unless I explicitly ask for that style.
 Keep the tone restrained and mechanistic.
+After drafting each section, run the mandatory prose-editing pass so I only see the edited version.
 ```
