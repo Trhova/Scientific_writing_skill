@@ -10,7 +10,7 @@
 - maintainable: compact `SKILL.md`, detailed references, and lightweight scripts
 - claim-aware: can search for the strongest citation for a specific sentence and judge whether the claim is supported as written
 - paper-aware: can resolve papers from local files, DOI, PMID, arXiv, title, citation strings, and topic queries while tracking metadata, abstract, and full-text access separately
-- PDF-ready: can render Markdown manuscripts to PDF through one supported pipeline with print CSS, local figure resolution, and vector-first figure handling
+- PDF-ready: can render Markdown manuscripts to PDF through one supported Pandoc + Tectonic pipeline with local figure resolution and vector-first figure handling
 
 ## Basic use
 
@@ -185,12 +185,12 @@ Figure handling is vector-first:
 
 - if the manuscript references `figure.png` and a same-basename `figure.pdf` exists, the PDF figure is preferred
 - otherwise a same-basename `figure.svg` is preferred over raster input
-- single-page PDF figures are converted deterministically to cached SVG for embedding
+- same-basename SVG figures are converted deterministically to cached PDF for LaTeX embedding
 - if no vector sibling exists, the original raster image is used
 
 This keeps labels and line art sharp when vector originals are available while still working with PNG or JPG figures.
 
-The renderer uses the repo-local environment defined in `environment.yml`, together with the print stylesheet at `assets/pdf_style.css`.
+The renderer uses the repo-local environment defined in `environment.yml`, together with the Pandoc header at `assets/pandoc_header.tex`.
 
 ## Examples
 

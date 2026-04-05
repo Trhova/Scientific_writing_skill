@@ -23,7 +23,7 @@ echo "Python:"
 echo
 
 echo "CLI tools:"
-for tool in pdftotext mutool tesseract gs; do
+for tool in pdftotext mutool tesseract gs pandoc tectonic; do
   if [ -x "${ENV_BIN_DIR}/${tool}" ]; then
     echo "  ${tool}: ${ENV_BIN_DIR}/${tool}"
   elif command -v "${tool}" >/dev/null 2>&1; then
@@ -46,7 +46,6 @@ modules = [
     "bs4",
     "lxml",
     "markdown",
-    "weasyprint",
     "cairosvg",
 ]
 for name in modules:

@@ -16,8 +16,9 @@ dependencies:
   - pytesseract
   - beautifulsoup4
   - markdown=3.6
-  - weasyprint=62.3
   - cairosvg=2.7.1
+  - pandoc=3.9.0.2
+  - tectonic=0.15.0
   - lxml
   - requests
   - pyyaml

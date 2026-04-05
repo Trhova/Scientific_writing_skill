@@ -43,7 +43,7 @@ It is meant to provide:
 - `pdftotext` for fast PDF text extraction
 - `mutool` as a second PDF extractor
 - `tesseract` for optional OCR
-- Python libraries such as `pymupdf`, `pypdf`, `pdfplumber`, `pytesseract`, `beautifulsoup4`, `lxml`, `markdown`, and `weasyprint`
+- Python libraries such as `pymupdf`, `pypdf`, `pdfplumber`, `pytesseract`, `beautifulsoup4`, `lxml`, `markdown`, and `cairosvg`
 
 Create or update the environment:
 
@@ -189,9 +189,10 @@ Why this path is official:
 
 - it lives inside the skill rather than in a temporary manuscript-specific helper
 - it runs from the repo-local environment described by `environment.yml`
+- it uses `pandoc` + `tectonic`, which matches the clean LaTeX-style typography of the original intro PDF
 - it preserves inline HTML superscripts, headings, tables, and local figures
 - it prefers vector figure assets when PDF or SVG originals are available
-- it uses deterministic local caching for converted PDF figures
+- it uses deterministic local caching for converted SVG figures
 
 Figure behavior:
 
@@ -200,8 +201,8 @@ Figure behavior:
 - same-basename `.svg` figures are preferred when no PDF figure is present
 - raster images are used only when no vector source is available
 
-The print styling used for the final PDF lives at:
+The renderer uses the Pandoc header at:
 
 ```text
-scientific-writing-workbench/assets/pdf_style.css
+scientific-writing-workbench/assets/pandoc_header.tex
 ```
