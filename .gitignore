@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 .codex/
 .writer-skill-env/
+.render_pdf_cache/

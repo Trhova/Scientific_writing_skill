@@ -1,0 +1,143 @@
+@page {
+  size: A4;
+  margin: 22mm 18mm 22mm 18mm;
+}
+
+html {
+  color: #111;
+  font-family: "Liberation Serif", "DejaVu Serif", serif;
+  font-size: 11pt;
+  line-height: 1.45;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #111;
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 1.2em 0 0.45em;
+  page-break-after: avoid;
+}
+
+h1 {
+  font-size: 18pt;
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 15pt;
+}
+
+h3 {
+  font-size: 13pt;
+}
+
+h4,
+h5,
+h6 {
+  font-size: 11.5pt;
+}
+
+p,
+ul,
+ol,
+table,
+blockquote {
+  margin: 0 0 0.85em;
+}
+
+p {
+  text-align: justify;
+  orphans: 3;
+  widows: 3;
+}
+
+sup {
+  font-size: 0.7em;
+  line-height: 0;
+  vertical-align: super;
+}
+
+img {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+figure {
+  margin: 1.2em auto;
+  page-break-inside: avoid;
+  text-align: center;
+}
+
+figure img {
+  margin-bottom: 0.45em;
+}
+
+figcaption {
+  font-size: 9.5pt;
+  line-height: 1.35;
+  text-align: left;
+}
+
+table {
+  border-collapse: collapse;
+  font-size: 9.5pt;
+  table-layout: fixed;
+  width: 100%;
+}
+
+th,
+td {
+  border: 0.5pt solid #666;
+  padding: 5pt 6pt;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+th {
+  background: #f3f3f3;
+  font-family: "Liberation Sans", "DejaVu Sans", sans-serif;
+  font-weight: 600;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tr,
+img {
+  page-break-inside: avoid;
+}
+
+a {
+  color: #111;
+  text-decoration: none;
+}
+
+code {
+  font-family: "Liberation Mono", "DejaVu Sans Mono", monospace;
+  font-size: 0.93em;
+}
+
+blockquote {
+  border-left: 2pt solid #bbb;
+  margin-left: 0;
+  padding-left: 0.9em;
+}
+
+.references p {
+  hanging-punctuation: first;
+  margin-left: 1.2em;
+  text-indent: -1.2em;
+}

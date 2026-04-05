@@ -82,6 +82,8 @@ The prose-editing pass is required after each section or subsection draft. Do no
   Use for provider-agnostic literature lookup. Start with local notes and existing bibliography, then add optional external providers only if needed. It now returns normalized paper records rather than loose metadata hits.
 - `scripts/claim_evidence_lookup.py`
   Use when the user wants the strongest citation for a specific claim, wants a sentence sourced, or asks whether a statement is actually supported by the literature. It ranks paper records while respecting whether the evidence is metadata-only, abstract-only, or full-text.
+- `scripts/render_pdf.py`
+  Use as the official manuscript PDF renderer for Markdown drafts. It supports headings, inline HTML superscripts such as `<sup>1</sup>`, tables, figure captions, local figures, and references, while preferring vector figure assets when PDF or SVG originals are available.
 
 ## Operating pattern
 
@@ -96,6 +98,7 @@ When responding to a scientific writing request:
 7. Immediately after drafting each section or subsection, run the mandatory prose-editing pass and return only the edited version.
 8. Validate citations and required declarations before finalizing.
 9. If reviewing or revising, produce a comment-to-change mapping instead of vague advice.
+10. When the user needs a final manuscript PDF, use `scripts/render_pdf.py` rather than ad hoc conversion commands or temporary scripts.
 
 When `references/style_preferences.md` is present:
 
@@ -153,3 +156,4 @@ start with `scripts/paper_access.py` so the workflow has an explicit access stat
 - Start a reviewer rebuttal using `assets/reviewer_response_template.md`.
 - Start a journal-fit or submission audit using `assets/journal_checklist_template.md`.
 - If LaTeX output is needed, adapt the optional files in `assets/optional_latex/`.
+- For a final manuscript PDF, run `python scientific-writing-workbench/scripts/render_pdf.py path/to/draft.md`.

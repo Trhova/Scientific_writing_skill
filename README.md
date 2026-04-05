@@ -43,7 +43,7 @@ It is meant to provide:
 - `pdftotext` for fast PDF text extraction
 - `mutool` as a second PDF extractor
 - `tesseract` for optional OCR
-- Python libraries such as `pymupdf`, `pypdf`, `pdfplumber`, `pytesseract`, `beautifulsoup4`, and `lxml`
+- Python libraries such as `pymupdf`, `pypdf`, `pdfplumber`, `pytesseract`, `beautifulsoup4`, `lxml`, `markdown`, and `weasyprint`
 
 Create or update the environment:
 
@@ -169,4 +169,39 @@ If you want to run the skill scripts with the repo-local environment, activate t
 ```bash
 python scientific-writing-workbench/scripts/paper_access.py --doi 10.1038/s41598-024-54249-9
 python scientific-writing-workbench/scripts/claim_evidence_lookup.py "This sentence needs a source: [Creatine improves cognitive performance in sleep deprivation]"
+```
+
+## Official PDF rendering
+
+This repo now includes one supported Markdown-to-PDF path for manuscripts:
+
+```bash
+python scientific-writing-workbench/scripts/render_pdf.py thesis_intro/intro_draft.md
+```
+
+Optional explicit output path:
+
+```bash
+python scientific-writing-workbench/scripts/render_pdf.py thesis_intro/intro_draft.md --output thesis_intro/intro_draft.pdf
+```
+
+Why this path is official:
+
+- it lives inside the skill rather than in a temporary manuscript-specific helper
+- it runs from the repo-local environment described by `environment.yml`
+- it preserves inline HTML superscripts, headings, tables, and local figures
+- it prefers vector figure assets when PDF or SVG originals are available
+- it uses deterministic local caching for converted PDF figures
+
+Figure behavior:
+
+- figure paths stay relative to the manuscript directory
+- same-basename `.pdf` figures are preferred over raster inputs
+- same-basename `.svg` figures are preferred when no PDF figure is present
+- raster images are used only when no vector source is available
+
+The print styling used for the final PDF lives at:
+
+```text
+scientific-writing-workbench/assets/pdf_style.css
 ```

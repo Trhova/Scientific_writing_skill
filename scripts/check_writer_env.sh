@@ -3,6 +3,8 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_PREFIX="${ROOT_DIR}/.writer-skill-env"
+PYTHON_BIN="${ENV_PREFIX}/bin/python"
+ENV_BIN_DIR="${ENV_PREFIX}/bin"
 
 if [ ! -d "${ENV_PREFIX}" ]; then
   echo "error: environment not found at ${ENV_PREFIX}" >&2
@@ -10,16 +12,21 @@ if [ ! -d "${ENV_PREFIX}" ]; then
   exit 1
 fi
 
-source "$(conda info --base)/etc/profile.d/conda.sh"
-conda activate "${ENV_PREFIX}"
+if [ ! -x "${PYTHON_BIN}" ]; then
+  echo "error: python not found in ${ENV_PREFIX}" >&2
+  echo "run scripts/setup_writer_env.sh first" >&2
+  exit 1
+fi
 
 echo "Python:"
-python --version
+"${PYTHON_BIN}" --version
 echo
 
 echo "CLI tools:"
 for tool in pdftotext mutool tesseract gs; do
-  if command -v "${tool}" >/dev/null 2>&1; then
+  if [ -x "${ENV_BIN_DIR}/${tool}" ]; then
+    echo "  ${tool}: ${ENV_BIN_DIR}/${tool}"
+  elif command -v "${tool}" >/dev/null 2>&1; then
     echo "  ${tool}: $(command -v "${tool}")"
   else
     echo "  ${tool}: MISSING"
@@ -28,7 +35,7 @@ done
 echo
 
 echo "Python packages:"
-python - <<'PY'
+"${PYTHON_BIN}" - <<'PY'
 modules = [
     "fitz",
     "pypdf",
@@ -38,6 +45,9 @@ modules = [
     "pytesseract",
     "bs4",
     "lxml",
+    "markdown",
+    "weasyprint",
+    "cairosvg",
 ]
 for name in modules:
     try:
