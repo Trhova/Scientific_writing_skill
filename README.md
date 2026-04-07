@@ -171,9 +171,9 @@ python scientific-writing-workbench/scripts/paper_access.py --doi 10.1038/s41598
 python scientific-writing-workbench/scripts/claim_evidence_lookup.py "This sentence needs a source: [Creatine improves cognitive performance in sleep deprivation]"
 ```
 
-## Official PDF rendering
+## PDF rendering
 
-This repo now includes one supported Markdown-to-PDF path for manuscripts:
+This repo includes a Markdown-to-PDF renderer for manuscripts:
 
 ```bash
 python scientific-writing-workbench/scripts/render_pdf.py thesis_intro/intro_draft.md
@@ -191,15 +191,17 @@ For stable rerenders that match the established thesis/manuscript output, use th
 ./.writer-skill-env/bin/python scientific-writing-workbench/scripts/render_pdf.py thesis_intro/intro_draft.md
 ```
 
-Why this path is official:
+It renders Markdown through `pandoc` + `tectonic` using the shared Pandoc header and the current figure-layout rules.
 
-- it lives inside the skill rather than in a temporary manuscript-specific helper
-- it runs from the repo-local environment described by `environment.yml`
-- it uses `pandoc` + `tectonic`, which matches the clean LaTeX-style typography of the original intro PDF
-- it preserves inline HTML superscripts, headings, tables, and local figures
-- it prefers vector figure assets when PDF or SVG originals are available
-- it uses deterministic local caching for converted SVG figures
-- it uses the shared Pandoc header and custom figure-block preprocessing that now drive the current thesis PDF layout
+It preserves:
+
+- inline HTML superscripts
+- headings
+- tables
+- local figures
+- references sections
+
+It also prefers vector figure assets when PDF or SVG originals are available and uses deterministic local caching for converted SVG figures.
 
 Figure behavior:
 

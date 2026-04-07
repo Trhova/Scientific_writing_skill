@@ -155,9 +155,9 @@ python -m py_compile scientific-writing-workbench/scripts/*.py
 python /home/trhova/.codex/skills/.system/skill-creator/scripts/quick_validate.py scientific-writing-workbench
 ```
 
-## Official PDF rendering
+## PDF rendering
 
-The supported manuscript rendering path is:
+The manuscript renderer is:
 
 ```bash
 python scientific-writing-workbench/scripts/render_pdf.py path/to/draft.md
@@ -168,8 +168,6 @@ Optional explicit output path:
 ```bash
 python scientific-writing-workbench/scripts/render_pdf.py path/to/draft.md --output path/to/draft.pdf
 ```
-
-This renderer is part of the skill and is intended to replace one-off Markdown-to-PDF fallbacks.
 
 For reproducible output, run it from the repo-local environment rather than the system Python:
 

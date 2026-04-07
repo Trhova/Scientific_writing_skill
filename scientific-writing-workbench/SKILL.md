@@ -83,7 +83,7 @@ The prose-editing pass is required after each section or subsection draft. Do no
 - `scripts/claim_evidence_lookup.py`
   Use when the user wants the strongest citation for a specific claim, wants a sentence sourced, or asks whether a statement is actually supported by the literature. It ranks paper records while respecting whether the evidence is metadata-only, abstract-only, or full-text.
 - `scripts/render_pdf.py`
-  Use as the official manuscript PDF renderer for Markdown drafts. It supports headings, inline HTML superscripts such as `<sup>1</sup>`, tables, figure captions, local figures, references, and manual `\newpage` breaks, while compiling through Pandoc plus Tectonic and preferring vector figure assets when PDF or SVG originals are available. The supported figure path is an image followed by a bold `Figure X.` legend line plus immediate continuation paragraphs; those legend blocks are rendered through the shared LaTeX header with large figure sizing, full bold legend text, and a horizontal separator after the legend block.
+  Use as the manuscript PDF renderer for Markdown drafts. It supports headings, inline HTML superscripts such as `<sup>1</sup>`, tables, figure captions, local figures, references, and manual `\newpage` breaks, while compiling through Pandoc plus Tectonic and preferring vector figure assets when PDF or SVG originals are available. The supported figure path is an image followed by a bold `Figure X.` legend line plus immediate continuation paragraphs; those legend blocks are rendered through the shared LaTeX header with large figure sizing, full bold legend text, and a horizontal separator after the legend block.
 
 ## Operating pattern
 
