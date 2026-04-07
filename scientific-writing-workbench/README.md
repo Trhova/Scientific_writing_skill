@@ -171,6 +171,12 @@ python scientific-writing-workbench/scripts/render_pdf.py path/to/draft.md --out
 
 This renderer is part of the skill and is intended to replace one-off Markdown-to-PDF fallbacks.
 
+For reproducible output, run it from the repo-local environment rather than the system Python:
+
+```bash
+./.writer-skill-env/bin/python scientific-writing-workbench/scripts/render_pdf.py path/to/draft.md
+```
+
 It supports:
 
 - Markdown headings
@@ -178,8 +184,11 @@ It supports:
 - bold and italics
 - Markdown tables
 - figure captions written as bold `Figure X.` paragraphs immediately below an image
+- figure caption continuation paragraphs immediately following the bold `Figure X.` line, including panel-style legends such as `**(A)** ...`
 - local figures referenced relative to the manuscript directory
 - references sections in the manuscript body
+- explicit manual page breaks with `\newpage`
+- escaped literal Markdown characters inside custom legends, for example `\\*p<0.05`
 
 Figure handling is vector-first:
 
@@ -191,6 +200,26 @@ Figure handling is vector-first:
 This keeps labels and line art sharp when vector originals are available while still working with PNG or JPG figures.
 
 The renderer uses the repo-local environment defined in `environment.yml`, together with the Pandoc header at `assets/pandoc_header.tex`.
+
+Pagination rules:
+
+- `\newpage` is the supported manual page-break marker in manuscript Markdown
+- section headings reserve space for following text to reduce stranded headings
+- figure blocks are detected as an image followed by a bold `Figure X.` legend paragraph and any immediate legend continuation paragraphs
+- the renderer prioritizes figure readability over aggressive keep-together shrinking
+- figures default to full text width when no smaller width is requested
+- long figure blocks may be moved to dedicated figure pages rather than shrinking the image heavily
+- figure legend blocks are rendered in the shared manuscript style: bold lead line, bold continuation text, and a horizontal separator after the legend block
+
+Figure authoring rules for stable output:
+
+- write figure blocks as:
+  - image line
+  - blank line
+  - bold `Figure X. ...` legend line
+  - optional immediate continuation paragraphs for the rest of the legend
+- keep the continuation paragraphs directly attached to that figure block; do not insert unrelated headings or tables between the image and the legend
+- if you need literal Markdown characters inside a custom legend, escape them in the source, for example `\\*`, `\\_`, or `\\#`
 
 ## Examples
 

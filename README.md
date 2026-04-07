@@ -185,6 +185,12 @@ Optional explicit output path:
 python scientific-writing-workbench/scripts/render_pdf.py thesis_intro/intro_draft.md --output thesis_intro/intro_draft.pdf
 ```
 
+For stable rerenders that match the established thesis/manuscript output, use the repo-local environment explicitly:
+
+```bash
+./.writer-skill-env/bin/python scientific-writing-workbench/scripts/render_pdf.py thesis_intro/intro_draft.md
+```
+
 Why this path is official:
 
 - it lives inside the skill rather than in a temporary manuscript-specific helper
@@ -193,6 +199,7 @@ Why this path is official:
 - it preserves inline HTML superscripts, headings, tables, and local figures
 - it prefers vector figure assets when PDF or SVG originals are available
 - it uses deterministic local caching for converted SVG figures
+- it uses the shared Pandoc header and custom figure-block preprocessing that now drive the current thesis PDF layout
 
 Figure behavior:
 
@@ -200,6 +207,17 @@ Figure behavior:
 - same-basename `.pdf` figures are preferred over raster inputs
 - same-basename `.svg` figures are preferred when no PDF figure is present
 - raster images are used only when no vector source is available
+- figures are recognized as an image followed by a bold `Figure X.` legend paragraph and immediate legend continuation text
+- figures default to full text width unless a smaller width is requested
+- the renderer prioritizes large readable figures over aggressive downscaling
+- long figure blocks are moved to dedicated figure pages when needed
+- figure legends use the shared thesis style: bold legend text with a horizontal separator after the legend block
+- escaped literal Markdown characters inside custom legends are supported, for example `\\*p<0.05`
+
+Manual pagination:
+
+- use `\newpage` in the Markdown source when a manuscript section must start on a new page
+- heading spacing and widow/orphan penalties are configured in the Pandoc header to reduce weak page breaks
 
 The renderer uses the Pandoc header at:
 

@@ -4,10 +4,97 @@
 \usepackage{longtable}
 \usepackage{array}
 \usepackage{caption}
+\usepackage{needspace}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{afterpage}
+\usepackage{etoolbox}
+\usepackage{titlesec}
 \usepackage{xcolor}
 \usepackage{newunicodechar}
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{β}{\ensuremath{\beta}}
+\newunicodechar{γ}{\ensuremath{\gamma}}
+\newunicodechar{δ}{\ensuremath{\delta}}
 \newunicodechar{κ}{\ensuremath{\kappa}}
+\newunicodechar{λ}{\ensuremath{\lambda}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{₀}{\textsubscript{0}}
+\newunicodechar{₁}{\textsubscript{1}}
+\newunicodechar{₂}{\textsubscript{2}}
+\newunicodechar{₃}{\textsubscript{3}}
+\newunicodechar{₄}{\textsubscript{4}}
+\newunicodechar{₅}{\textsubscript{5}}
+\newunicodechar{₆}{\textsubscript{6}}
+\newunicodechar{₇}{\textsubscript{7}}
+\newunicodechar{₈}{\textsubscript{8}}
+\newunicodechar{₉}{\textsubscript{9}}
+\newunicodechar{⁰}{\textsuperscript{0}}
+\newunicodechar{¹}{\textsuperscript{1}}
+\newunicodechar{²}{\textsuperscript{2}}
+\newunicodechar{³}{\textsuperscript{3}}
+\newunicodechar{⁴}{\textsuperscript{4}}
+\newunicodechar{⁵}{\textsuperscript{5}}
+\newunicodechar{⁶}{\textsuperscript{6}}
+\newunicodechar{⁷}{\textsuperscript{7}}
+\newunicodechar{⁸}{\textsuperscript{8}}
+\newunicodechar{⁹}{\textsuperscript{9}}
+\newunicodechar{⁻}{\textsuperscript{-}}
+\newunicodechar{ }{\,}
+\newunicodechar{ }{\,}
 \setlength{\parskip}{0.45em}
 \setlength{\parindent}{0pt}
 \captionsetup[figure]{labelfont=bf,font=small}
 \captionsetup[table]{labelfont=bf,font=small}
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\interfootnotelinepenalty=10000
+\pretocmd{\section}{\Needspace{12\baselineskip}}{}{}
+\pretocmd{\subsection}{\Needspace{10\baselineskip}}{}{}
+\pretocmd{\subsubsection}{\Needspace{8\baselineskip}}{}{}
+\pretocmd{\paragraph}{\Needspace{6\baselineskip}}{}{}
+\titleformat{\paragraph}[block]{\normalfont\bfseries}{\theparagraph}{0.6em}{}
+\titlespacing*{\paragraph}{0pt}{1.2ex plus .2ex minus .2ex}{0.5ex}
+\titleformat{\subparagraph}[block]{\normalfont\bfseries}{\thesubparagraph}{0.6em}{}
+\titlespacing*{\subparagraph}{0pt}{1.0ex plus .2ex minus .2ex}{0.4ex}
+\AtBeginEnvironment{longtable}{\Needspace{10\baselineskip}}
+\newcommand{\thesisfigurelead}[1]{%
+  {\small\bfseries\color{black}\noindent #1\par}%
+}
+\newcommand{\thesisfigurebody}[1]{%
+  \ifstrempty{#1}{}{%
+    \vspace{0.4em}%
+    {\footnotesize\bfseries\color{black}\noindent #1\par}%
+  }%
+}
+\newcommand{\thesisfigureaftermark}{%
+  \par\vspace{0.2em}%
+  \noindent{\color{black!55}\rule{\linewidth}{0.4pt}}\par
+  \vspace{1.45em}%
+}
+\newcommand{\thesisfigureblock}[5]{%
+  \Needspace{26\baselineskip}%
+  \begin{center}%
+  \includegraphics[width=#1,height=#2,keepaspectratio]{#3}%
+  \end{center}%
+  \vspace{0.7em}%
+  \thesisfigurelead{#4}%
+  \thesisfigurebody{#5}%
+  \thesisfigureaftermark%
+}
+\newcommand{\thesisfigurepage}[5]{%
+  \clearpage
+  \thispagestyle{plain}%
+  \begin{center}%
+  \includegraphics[width=#1,height=#2,keepaspectratio]{#3}%
+  \end{center}%
+  \vspace{0.7em}%
+  \thesisfigurelead{#4}%
+  \thesisfigurebody{#5}%
+  \thesisfigureaftermark%
+}

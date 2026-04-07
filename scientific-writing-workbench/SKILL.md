@@ -83,7 +83,7 @@ The prose-editing pass is required after each section or subsection draft. Do no
 - `scripts/claim_evidence_lookup.py`
   Use when the user wants the strongest citation for a specific claim, wants a sentence sourced, or asks whether a statement is actually supported by the literature. It ranks paper records while respecting whether the evidence is metadata-only, abstract-only, or full-text.
 - `scripts/render_pdf.py`
-  Use as the official manuscript PDF renderer for Markdown drafts. It supports headings, inline HTML superscripts such as `<sup>1</sup>`, tables, figure captions, local figures, and references, while compiling through Pandoc plus Tectonic and preferring vector figure assets when PDF or SVG originals are available.
+  Use as the official manuscript PDF renderer for Markdown drafts. It supports headings, inline HTML superscripts such as `<sup>1</sup>`, tables, figure captions, local figures, references, and manual `\newpage` breaks, while compiling through Pandoc plus Tectonic and preferring vector figure assets when PDF or SVG originals are available. The supported figure path is an image followed by a bold `Figure X.` legend line plus immediate continuation paragraphs; those legend blocks are rendered through the shared LaTeX header with large figure sizing, full bold legend text, and a horizontal separator after the legend block.
 
 ## Operating pattern
 
@@ -98,7 +98,7 @@ When responding to a scientific writing request:
 7. Immediately after drafting each section or subsection, run the mandatory prose-editing pass and return only the edited version.
 8. Validate citations and required declarations before finalizing.
 9. If reviewing or revising, produce a comment-to-change mapping instead of vague advice.
-10. When the user needs a final manuscript PDF, use `scripts/render_pdf.py` rather than ad hoc conversion commands or temporary scripts.
+10. When the user needs a final manuscript PDF, use `scripts/render_pdf.py` from the repo-local skill environment rather than ad hoc conversion commands or temporary scripts.
 
 When `references/style_preferences.md` is present:
 
@@ -157,3 +157,4 @@ start with `scripts/paper_access.py` so the workflow has an explicit access stat
 - Start a journal-fit or submission audit using `assets/journal_checklist_template.md`.
 - If LaTeX output is needed, adapt the optional files in `assets/optional_latex/`.
 - For a final manuscript PDF, run `python scientific-writing-workbench/scripts/render_pdf.py path/to/draft.md`.
+- For reproducible rerenders that match the established thesis/manuscript output, prefer the repo-local environment, for example `./.writer-skill-env/bin/python scientific-writing-workbench/scripts/render_pdf.py path/to/draft.md`.
