@@ -1,0 +1,104 @@
+repo: writer_skill
+skill:
+  name: scientific-writing-workbench
+  purpose: >-
+    Local-first scientific writing skill for Codex that supports document ingestion,
+    paper access, evidence mapping, citation hygiene, drafting, revision, and
+    Markdown-to-PDF rendering.
+what_it_can_help_with:
+  - Draft introductions, methods, results, discussions, abstracts, and conclusions
+  - Turn notes, DOCX, PDF, tables, and figures into working Markdown manuscripts
+  - Retrieve papers from local files, DOI, PMID, arXiv, title, and search queries
+  - Check whether claims are actually supported by the literature
+  - Clean, validate, enrich, and deduplicate BibTeX bibliographies
+  - Adapt manuscripts to journals and prepare reviewer-response documents
+  - Render final PDFs from Markdown with stable local tooling
+core_workflow:
+  - step: intake
+    description: Place manuscript inputs, figures, tables, notes, and bibliography files in a clean project structure
+  - step: convert
+    description: Convert DOCX/PDF/PPTX/XLSX/CSV/TXT/Markdown into clean Markdown or text
+    default_engine: MarkItDown
+  - step: resolve_sources
+    description: Resolve paper metadata and access state from local files and identifiers
+  - step: draft
+    description: Build evidence maps and outlines, then draft or revise in Markdown
+  - step: validate
+    description: Validate claims, citations, and bibliography quality
+  - step: render
+    description: Render the final PDF locally through Pandoc and Tectonic using the shared renderer
+project_layout_recommendation:
+  root_dirs:
+    - intake
+    - notes
+    - refs
+    - data
+    - figures
+    - manuscript
+    - archive
+  manuscript_subdirs:
+    - source/frontmatter
+    - source/chapters
+    - source/generated
+    - output
+    - scripts
+    - style
+main_scripts:
+  convert_documents.py: Convert external documents into Markdown or text
+  paper_access.py: Resolve papers and normalize access state
+  extract_metadata.py: Extract DOI, PMID, arXiv, URL, title, and year candidates
+  doi_to_bibtex.py: Resolve identifiers into BibTeX where possible
+  validate_citations.py: Validate bibliography quality
+  deduplicate_bibtex.py: Remove duplicate or overlapping BibTeX entries
+  optional_research_lookup.py: Run provider-agnostic external literature discovery
+  claim_evidence_lookup.py: Find the strongest source for a specific claim
+  render_pdf.py: Render Markdown manuscripts to PDF
+external_tools:
+  markitdown:
+    role: Default document-to-Markdown conversion engine for supported formats
+    integration_status: implemented
+    integration_type: local_package
+  paperclip:
+    role: Optional broad literature-discovery backend for search, grep, map, and narrowing corpora
+    integration_status: todo_documented_only
+    install:
+      - curl -fsSL https://paperclip.gxl.ai/install.sh | bash
+      - paperclip login
+      - paperclip config
+install_everything_needed:
+  codex_skill_install:
+    project_local:
+      - mkdir -p .codex/skills
+      - cp -R scientific-writing-workbench .codex/skills/
+    global:
+      - mkdir -p ~/.codex/skills
+      - cp -R scientific-writing-workbench ~/.codex/skills/
+  local_environment:
+    - bash scripts/setup_writer_env.sh
+    - conda activate /home/trhova/writer_skill/.writer-skill-env
+    - bash scripts/check_writer_env.sh
+  required_local_capabilities:
+    - pandoc
+    - tectonic
+    - pdftotext
+    - mutool
+    - optional tesseract OCR
+  python_packages_expected:
+    - markitdown
+    - pymupdf
+    - pypdf
+    - pdfplumber
+    - beautifulsoup4
+    - lxml
+    - markdown
+    - cairosvg
+entry_points_to_read_first:
+  - README.md
+  - scientific-writing-workbench/SKILL.md
+  - scientific-writing-workbench/references/document_ingestion.md
+  - scientific-writing-workbench/references/paper_access_workflow.md
+  - scientific-writing-workbench/references/claim_evidence_workflow.md
+  - scientific-writing-workbench/references/citation_pipeline.md
+notes:
+  - MarkItDown is used as a local package and not as an MCP server in this repository
+  - Paperclip is documented as a future optional backend and is not yet wired into the skill scripts
