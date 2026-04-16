@@ -183,8 +183,6 @@ The skill is strongest when the working project is organized clearly and the rel
 
 ## Recommended project structure
 
-A good default structure is the one now used in `thesis_intro/`: explicit intake folders, notes, references, source Markdown, generated outputs, and an archive area.
-
 Suggested layout:
 
 ```text
@@ -241,38 +239,6 @@ What each area is for:
   - project-specific import/build helpers
 - `archive/`
   - old inputs, obsolete exports, temporary planning files, and legacy material you do not want in the active build path
-
-For a thesis-like project, a more concrete chapter intake structure works well:
-
-```text
-thesis_intro/
-  intake/
-    chapter_1_intro/
-      figures/
-    chapter_2_intratumoral_iaa/
-      manuscript_pdf/
-    chapter_3_boulardii/
-      manuscript_docx/
-      figure_drop/
-      table_3_MAGs/
-    chapter_4_acp/
-      manuscript_pdf/
-  thesis/
-    source/
-    output/
-    scripts/
-    style/
-  notes/
-  refs/
-  archive/
-```
-
-This structure makes repeated cycles practical:
-- replace the source manuscript or figures in `intake/`
-- regenerate Markdown if needed
-- edit the Markdown in `source/`
-- render PDFs into `output/`
-- move obsolete clutter to `archive/`
 
 ## MarkItDown integration
 
@@ -412,9 +378,9 @@ This repository is the skill plus a live working environment used to develop and
 
 - the reusable `scientific-writing-workbench` skill
 - local helper scripts and environment setup
-- example writing projects such as the `thesis_intro/` workflow
+- example writing workflows used to exercise the conversion, evidence, and rendering pipeline
 
 The README is intentionally broader than a bare skill README because the repository is used both as:
 
 - the source repo for the skill itself
-- a reference implementation of how to organize a scientific writing project around intake, Markdown conversion, evidence mapping, and stable PDF rendering
+- a practical guide to organizing scientific writing work around intake, Markdown conversion, evidence mapping, and stable PDF rendering
